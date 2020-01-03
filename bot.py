@@ -2,30 +2,31 @@ import serial
 import discord
 import asyncio
 
-ser = serial.Serial('/dev/ttyACM17', 9600)
-TOKEN = "NjYxOTI5MDQ4MzAxMjQwMzMz.XgzepQ.0nhBid37D0WxrWZMef5UJhVKRUg"
+TOKEN = "NjYxOTI5MDQ4MzAxMjQwMzMz.Xg5ZYg.LOKJSdLu-Tq_pkjLFgyDktn9lvY"
+ser = serial.Serial('/dev/ttyACM0', 9600)
 
-import asyncio
-client = discord.Client()
-async def my_background_task():
-    await client.wait_until_ready()
-    counter = 0
-    channel = discord.Object(id='661989449214984192')
-    while not client.is_closed:
-        counter += 1
-        print(counter)
-        await client.send_message(channel, counter)
-        await asyncio.sleep(5)
+class MyClient(discord.Client):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
-client.loop.create_task(my_background_task())
+        self.bg_task = self.loop.create_task(self.my_background_task())
+
+    async def on_ready(self):
+        print('Logged in as')
+        print(self.user.name)
+        print(self.user.id)
+        print('------')
+
+    async def my_background_task(self):
+        await self.wait_until_ready()
+        channel = self.get_channel(661989449214984192) # channel ID goes here
+        while not self.is_closed():
+            cc = ser.readline().decode()
+            print(cc)
+            #await channel.send(cc)
+            await client.change_presence(status=discord.Status.online,activity=discord.Game("with bac of: " + cc))
+            await asyncio.sleep(5)
+
+
+client = MyClient()
 client.run(TOKEN)
-
-while True:
-    cc=str(ser.readline())
-    print(cc)
