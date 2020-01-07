@@ -2,9 +2,9 @@ import serial
 import discord
 import asyncio
 
-TOKEN = "NjYxOTI5MDQ4MzAxMjQwMzMz.Xg5ZYg.LOKJSdLu-Tq_pkjLFgyDktn9lvY"
-ser = serial.Serial('/dev/ttyACM0', 9600)
-
+TOKEN = "NjYxOTI5MDQ4MzAxMjQwMzMz.Xg9kzw._EtntJCVaD35str2iS8nSPpYxgs"
+ser = serial.Serial('/dev/ttyACM1', 9600,timeout = 10)
+output = "Ready"
 class MyClient(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -23,8 +23,10 @@ class MyClient(discord.Client):
         while not self.is_closed():
             cc = ser.readline().decode()
             print(cc)
+            if cc:
+                output = cc
             #await channel.send(cc)
-            await client.change_presence(status=discord.Status.online,activity=discord.Game("with bac of: " + cc))
+            await client.change_presence(status=discord.Status.online,activity=discord.Game(output))
             await asyncio.sleep(5)
 
 

@@ -1,0 +1,60 @@
+#define sensor A0
+unsigned int interruptPin = 2;
+
+bool readyTo = true;
+
+void setup() {
+  pinMode(interruptPin, INPUT_PULLUP);
+  Serial.begin(9600);
+}
+
+void loop() {  
+  if(digitalRead(interruptPin) == LOW && readyTo == true){
+    readyTo = false;
+    measure();
+  }else if(digitalRead(interruptPin) == HIGH && readyTo == false){
+    readyTo = true;  
+  }
+}
+
+void measure(){
+float adcValue=0;
+  for(int i=0;i<10;i++)
+  {
+    adcValue+= analogRead(sensor);
+    delay(100);
+  }
+  float value= (adcValue/10);
+  if(value<200)
+  {
+      Serial.println("You are sober.");
+  }
+  if (value>=200 && value<280)
+  {
+      Serial.println("You had a beer.");
+  }
+  if (value>=280 && value<350)
+  {
+      Serial.println("Two or more beers.");
+  }
+  if (value>=350 && value <450)
+  {
+      Serial.println("Three or more beers");
+  }
+  if(value>450)
+  {
+     Serial.println("You are drunk!");
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

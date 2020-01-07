@@ -1,0 +1,52 @@
+#define sensor A0
+unsigned int interruptPin = 2;
+
+bool readyTo = true;
+
+void setup() {
+  pinMode(interruptPin, INPUT_PULLUP);
+  Serial.begin(9600);
+}
+
+void loop() {  
+  if(digitalRead(interruptPin) == LOW && readyTo == true){
+    readyTo = false;
+    measure();
+  }else if(digitalRead(interruptPin) == HIGH && readyTo == false){
+    readyTo = true;  
+  }
+}
+
+void measure(){
+float adcValue=0;
+  for(int i=0;i<10;i++)
+  {
+    adcValue+= analogRead(sensor);
+    delay(100);
+  }
+  float v= (adcValue/10) * (5.0/1024.0);
+  float mgL= 0.67 * v;
+  Serial.print("BAC:");
+  Serial.print(mgL);
+  Serial.print(" mg/L");
+  if(mgL > 0.8)
+  { 
+    Serial.println("    Drunk");
+  }
+  else
+  {
+    Serial.println("    Normal");
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
